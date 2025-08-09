@@ -2,375 +2,403 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tampa Sourdough Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tampa Pro Sourdough Tracker</title>
     <link rel="stylesheet" href="style.css">
-    <meta name="theme-color" content="#5E5240">
+    <meta name="theme-color" content="#218085">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Tampa Sourdough">
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRhbXBhIFNvdXJkb3VnaCBUcmFja2VyIiwKICAic2hvcnRfbmFtZSI6ICJTb3VyZG91Z2giLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzVFNTI0MCIsCiAgInRoZW1lX2NvbG9yIjogIiM1RTUyNDAiCn0=">
+    <meta name="apple-mobile-web-app-title" content="Tampa Pro Sourdough">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRhbXBhIFBybyBTb3VyZG91Z2ggVHJhY2tlciIsCiAgInNob3J0X25hbWUiOiAiUHJvU291cmRvdWdoIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMyMTgwODUiLAogICJ0aGVtZV9jb2xvciI6ICIjMjE4MDg1IiwKICAiaWNvbnMiOiBbXQp9">
 </head>
-<body>
+<body data-theme="light">
     <div id="app">
-        <!-- Header -->
+        <!-- Enhanced Professional Header -->
         <header class="app-header">
-            <h1 class="app-title">Tampa Sourdough</h1>
-            <div class="climate-indicator">
-                <span class="temp-display">75°F</span>
-                <span class="humidity-display">68%</span>
+            <div class="header-main">
+                <h1 class="app-title">🍞 Tampa Pro Sourdough</h1>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌓</button>
+            </div>
+            <div class="climate-panel">
+                <div class="climate-info">
+                    <span class="weather-temp" id="current-temp">84°F</span>
+                    <span class="weather-humidity" id="current-humidity">75%</span>
+                    <span class="fermentation-speed" id="fermentation-rate">+25% faster</span>
+                </div>
+                <div class="weather-trend">
+                    <span class="trend-icon">📈</span>
+                    <span class="trend-text">High pressure</span>
+                </div>
             </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="main-content">
             <!-- Dashboard View -->
             <div id="dashboard-view" class="view active">
-                <section class="active-bakes">
-                    <h2>Active Bakes</h2>
-                    <div id="active-bakes-list" class="bakes-list">
-                        <!-- Active bakes will be populated by JavaScript -->
+                <!-- Active Fermentation Panel -->
+                <section class="active-fermentation">
+                    <div class="card">
+                        <h2 class="card-header">🕐 Active Fermentation</h2>
+                        <div id="active-timers" class="timers-container">
+                            <!-- Timers will be populated by JavaScript -->
+                        </div>
+                        <button class="btn btn-primary" onclick="startNewBake()">
+                            ➕ Start New Bake
+                        </button>
                     </div>
                 </section>
 
+                <!-- Quick Stats -->
                 <section class="quick-stats">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <span class="stat-number" id="total-bakes">0</span>
-                            <span class="stat-label">Total Bakes</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-number" id="avg-rating">0.0</span>
-                            <span class="stat-label">Avg Rating</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-number" id="success-rate">0%</span>
-                            <span class="stat-label">Success Rate</span>
+                    <div class="card">
+                        <h2 class="card-header">📊 Quick Stats</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-number" id="total-bakes">0</span>
+                                <span class="stat-label">Total Bakes</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="success-rate">0%</span>
+                                <span class="stat-label">Success Rate</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="avg-rating">0.0</span>
+                                <span class="stat-label">Avg Rating</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="active-count">0</span>
+                                <span class="stat-label">Active Bakes</span>
+                            </div>
                         </div>
                     </div>
                 </section>
 
+                <!-- Recent Activity -->
                 <section class="recent-activity">
-                    <h2>Recent Activity</h2>
-                    <div id="recent-activity-list" class="activity-list">
-                        <!-- Recent activity will be populated by JavaScript -->
+                    <div class="card">
+                        <h2 class="card-header">📋 Recent Activity</h2>
+                        <ul id="recent-activity-list" class="item-list">
+                            <!-- Recent activity will be populated by JavaScript -->
+                        </ul>
                     </div>
                 </section>
             </div>
 
             <!-- New Bake View -->
             <div id="new-bake-view" class="view">
-                <div class="bake-wizard">
-                    <div class="wizard-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="wizard-progress"></div>
-                        </div>
+                <div class="card">
+                    <h2 class="card-header">🆕 Start New Bake</h2>
+                    
+                    <!-- Progress Indicator -->
+                    <div class="progress-container">
                         <div class="progress-steps">
-                            <span class="step active" data-step="1">Formula</span>
-                            <span class="step" data-step="2">Levain</span>
-                            <span class="step" data-step="3">Bulk</span>
-                            <span class="step" data-step="4">Proof</span>
-                            <span class="step" data-step="5">Bake</span>
+                            <div class="progress-step active" data-step="1">1</div>
+                            <div class="progress-step" data-step="2">2</div>
+                            <div class="progress-step" data-step="3">3</div>
+                            <div class="progress-step" data-step="4">4</div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>Formula</span>
+                            <span>Timing</span>
+                            <span>Environment</span>
+                            <span>Start</span>
                         </div>
                     </div>
 
                     <!-- Step 1: Formula Selection -->
-                    <div id="step-1" class="wizard-step active">
-                        <h2>Select Formula</h2>
-                        <div class="formula-selection">
-                            <div id="formula-list" class="formula-cards">
-                                <!-- Formula cards will be populated -->
-                            </div>
-                            <button class="btn btn--outline" onclick="showCreateFormula()">Create New Formula</button>
+                    <div id="step-1" class="bake-step active">
+                        <h3>Select or Create Formula</h3>
+                        <div class="form-group">
+                            <label class="form-label">Choose Formula:</label>
+                            <select id="formula-select" class="form-select">
+                                <option value="">-- Select Formula --</option>
+                                <option value="1">Tampa Country Levain 78%</option>
+                                <option value="2">High-Extraction Tampa Sourdough</option>
+                                <option value="custom">Create New Formula</option>
+                            </select>
                         </div>
                         
-                        <div class="formula-details" id="formula-details" style="display: none;">
-                            <h3>Formula Details</h3>
-                            <div class="weights-grid">
-                                <div class="weight-item">
-                                    <span class="weight-label">Total Flour</span>
-                                    <span class="weight-value" id="total-flour">0g</span>
-                                </div>
-                                <div class="weight-item">
-                                    <span class="weight-label">Water</span>
-                                    <span class="weight-value" id="water-weight">0g</span>
-                                </div>
-                                <div class="weight-item">
-                                    <span class="weight-label">Salt</span>
-                                    <span class="weight-value" id="salt-weight">0g</span>
-                                </div>
-                                <div class="weight-item">
-                                    <span class="weight-label">Levain</span>
-                                    <span class="weight-value" id="levain-weight">0g</span>
-                                </div>
-                            </div>
-                            <button class="btn btn--primary" onclick="nextStep()">Start with This Formula</button>
+                        <div id="formula-details" class="formula-details" style="display: none;">
+                            <!-- Formula details will be populated by JavaScript -->
+                        </div>
+
+                        <button class="btn btn-primary" onclick="nextStep()">Next: Timing →</button>
+                    </div>
+
+                    <!-- Step 2: Timing Setup -->
+                    <div id="step-2" class="bake-step">
+                        <h3>Setup Timing</h3>
+                        <div class="form-group">
+                            <label class="form-label">Target Bake Time:</label>
+                            <input type="datetime-local" id="target-bake-time" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Current Dough Temperature (°F):</label>
+                            <input type="number" id="current-temp" class="form-input" value="78" min="65" max="85">
+                        </div>
+                        <div class="timing-calculation" id="timing-results">
+                            <!-- Calculated timing will appear here -->
+                        </div>
+                        <div class="step-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn btn-primary" onclick="nextStep()">Next: Environment →</button>
                         </div>
                     </div>
 
-                    <!-- Step 2: Levain Build -->
-                    <div id="step-2" class="wizard-step">
-                        <h2>Levain Build</h2>
-                        <form class="levain-form">
-                            <div class="form-group">
-                                <label class="form-label">Start Time</label>
-                                <input type="datetime-local" class="form-control" id="levain-start" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Target Ready Time</label>
-                                <input type="datetime-local" class="form-control" id="levain-ready" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Temperature (°F)</label>
-                                <input type="number" class="form-control" id="levain-temp" value="76" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Notes</label>
-                                <textarea class="form-control" id="levain-notes" rows="3"></textarea>
-                            </div>
-                        </form>
-                        <div class="wizard-buttons">
-                            <button class="btn btn--secondary" onclick="prevStep()">Back</button>
-                            <button class="btn btn--primary" onclick="nextStep()">Continue</button>
+                    <!-- Step 3: Environment Setup -->
+                    <div id="step-3" class="bake-step">
+                        <h3>Environment Conditions</h3>
+                        <div class="form-group">
+                            <label class="form-label">Ambient Temperature (°F):</label>
+                            <input type="number" id="ambient-temp" class="form-input" value="76" min="65" max="90">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Humidity (%):</label>
+                            <input type="number" id="ambient-humidity" class="form-input" value="68" min="30" max="90">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">AC Running?</label>
+                            <select id="ac-status" class="form-select">
+                                <option value="yes">Yes - Consistent temp</option>
+                                <option value="no">No - Natural variation</option>
+                                <option value="cycling">Cycling - Some variation</option>
+                            </select>
+                        </div>
+                        <div class="step-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn btn-primary" onclick="nextStep()">Next: Start →</button>
                         </div>
                     </div>
 
-                    <!-- Step 3: Bulk Fermentation -->
-                    <div id="step-3" class="wizard-step">
-                        <h2>Bulk Fermentation</h2>
-                        <div class="bulk-controls">
-                            <div class="timer-display">
-                                <span class="timer-label">Bulk Timer</span>
-                                <span class="timer-time" id="bulk-timer">0:00:00</span>
-                            </div>
-                            <div class="timer-buttons">
-                                <button class="btn btn--primary" id="start-bulk-btn" onclick="startBulkTimer()">Start Bulk</button>
-                                <button class="btn btn--secondary" id="pause-bulk-btn" onclick="pauseBulkTimer()" style="display: none;">Pause</button>
-                                <button class="btn btn--outline" id="end-bulk-btn" onclick="endBulkFermentation()" style="display: none;">End Bulk</button>
-                            </div>
+                    <!-- Step 4: Start Confirmation -->
+                    <div id="step-4" class="bake-step">
+                        <h3>Ready to Start</h3>
+                        <div id="bake-summary" class="bake-summary">
+                            <!-- Summary will be populated by JavaScript -->
                         </div>
-                        
-                        <div class="environment-logging">
-                            <h3>Environment Check</h3>
-                            <div class="env-inputs">
-                                <div class="form-group">
-                                    <label class="form-label">Ambient Temp (°F)</label>
-                                    <input type="number" class="form-control" id="ambient-temp" value="75">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Dough Temp (°F)</label>
-                                    <input type="number" class="form-control" id="dough-temp" value="76">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Humidity (%)</label>
-                                    <input type="number" class="form-control" id="humidity" value="68">
-                                </div>
-                                <button class="btn btn--outline" onclick="logEnvironment()">Log Environment</button>
-                            </div>
+                        <div class="step-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn btn-success" onclick="startBake()">🚀 Start Baking!</button>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="fold-tracking">
-                            <h3>Fold Schedule</h3>
-                            <div id="fold-log" class="fold-entries">
-                                <!-- Fold entries will be added here -->
-                            </div>
-                            <button class="btn btn--outline" onclick="addFold()">Add Fold</button>
-                        </div>
+            <!-- Active Bake View -->
+            <div id="active-bake-view" class="view">
+                <div class="card">
+                    <h2 class="card-header">🍞 Active Bake</h2>
+                    
+                    <!-- Current Stage Display -->
+                    <div id="current-stage" class="current-stage">
+                        <!-- Current stage info will be populated by JavaScript -->
+                    </div>
 
-                        <div class="wizard-buttons">
-                            <button class="btn btn--secondary" onclick="prevStep()">Back</button>
+                    <!-- Timer Display -->
+                    <div id="main-timer" class="timer-card">
+                        <div class="timer-time" id="timer-display">00:00:00</div>
+                        <div class="timer-label" id="timer-label">Bulk Fermentation</div>
+                        <div class="timer-controls">
+                            <button class="btn btn-secondary" id="pause-btn" onclick="pauseTimer()">⏸️ Pause</button>
+                            <button class="btn btn-warning" id="log-btn" onclick="showLogForm()">📝 Log</button>
+                            <button class="btn btn-success" id="next-stage-btn" onclick="nextStage()">⏭️ Next Stage</button>
                         </div>
                     </div>
 
-                    <!-- Step 4: Proofing -->
-                    <div id="step-4" class="wizard-step">
-                        <h2>Proofing</h2>
-                        <div class="proof-method">
-                            <label class="form-label">Proof Method</label>
-                            <div class="radio-group">
-                                <label class="radio-label">
-                                    <input type="radio" name="proof-method" value="room" checked>
-                                    <span>Room Temperature</span>
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="proof-method" value="cold">
-                                    <span>Cold Proof (Refrigerator)</span>
-                                </label>
-                            </div>
+                    <!-- Environment Logging -->
+                    <div id="log-form" class="log-form" style="display: none;">
+                        <h3>Log Current Conditions</h3>
+                        <div class="form-group">
+                            <label class="form-label">Dough Temperature (°F):</label>
+                            <input type="number" id="log-dough-temp" class="form-input" step="0.1">
                         </div>
-
-                        <div class="proof-timer">
-                            <div class="timer-display">
-                                <span class="timer-label">Proof Timer</span>
-                                <span class="timer-time" id="proof-timer">0:00:00</span>
-                            </div>
-                            <div class="timer-buttons">
-                                <button class="btn btn--primary" id="start-proof-btn" onclick="startProofTimer()">Start Proof</button>
-                                <button class="btn btn--secondary" id="pause-proof-btn" onclick="pauseProofTimer()" style="display: none;">Pause</button>
-                                <button class="btn btn--outline" id="end-proof-btn" onclick="endProofing()" style="display: none;">Ready to Bake</button>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Ambient Temperature (°F):</label>
+                            <input type="number" id="log-ambient-temp" class="form-input" step="0.1">
                         </div>
-
-                        <div class="wizard-buttons">
-                            <button class="btn btn--secondary" onclick="prevStep()">Back</button>
+                        <div class="form-group">
+                            <label class="form-label">Humidity (%):</label>
+                            <input type="number" id="log-humidity" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rise Percentage:</label>
+                            <select id="log-rise" class="form-select">
+                                <option value="10">10% - Just started</option>
+                                <option value="25">25% - Quarter rise</option>
+                                <option value="50">50% - Half risen</option>
+                                <option value="75">75% - Almost ready</option>
+                                <option value="90">90% - Ready soon</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Notes:</label>
+                            <textarea id="log-notes" class="form-textarea" rows="3" placeholder="Dough feel, activity level, any observations..."></textarea>
+                        </div>
+                        <div class="step-buttons">
+                            <button class="btn btn-secondary" onclick="hideLogForm()">Cancel</button>
+                            <button class="btn btn-primary" onclick="saveLog()">Save Log</button>
                         </div>
                     </div>
 
-                    <!-- Step 5: Baking -->
-                    <div id="step-5" class="wizard-step">
-                        <h2>Baking</h2>
-                        <form class="bake-form">
-                            <div class="form-group">
-                                <label class="form-label">Oven Temperature (°F)</label>
-                                <input type="number" class="form-control" id="oven-temp" value="485" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Covered Time (minutes)</label>
-                                <input type="number" class="form-control" id="covered-time" value="20" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Uncovered Time (minutes)</label>
-                                <input type="number" class="form-control" id="uncovered-time" value="18" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Steam Method</label>
-                                <select class="form-control" id="steam-method">
-                                    <option value="Dutch Oven">Dutch Oven</option>
-                                    <option value="Steam Pan">Steam Pan</option>
-                                    <option value="Ice Cubes">Ice Cubes</option>
-                                    <option value="None">None</option>
-                                </select>
-                            </div>
-                        </form>
-                        
-                        <div class="final-rating">
-                            <h3>Rate Your Bake</h3>
-                            <div class="rating-stars">
-                                <span class="star" data-rating="1">★</span>
-                                <span class="star" data-rating="2">★</span>
-                                <span class="star" data-rating="3">★</span>
-                                <span class="star" data-rating="4">★</span>
-                                <span class="star" data-rating="5">★</span>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Issues (if any)</label>
-                                <div class="issue-checkboxes" id="issue-checkboxes">
-                                    <!-- Issues will be populated by JavaScript -->
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Final Notes</label>
-                                <textarea class="form-control" id="final-notes" rows="3"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="wizard-buttons">
-                            <button class="btn btn--secondary" onclick="prevStep()">Back</button>
-                            <button class="btn btn--primary" onclick="completeBake()">Complete Bake</button>
-                        </div>
+                    <!-- Recent Logs -->
+                    <div class="recent-logs">
+                        <h3>Recent Logs</h3>
+                        <ul id="current-bake-logs" class="item-list">
+                            <!-- Logs will be populated by JavaScript -->
+                        </ul>
                     </div>
                 </div>
             </div>
 
             <!-- Formulas View -->
             <div id="formulas-view" class="view">
-                <div class="view-header">
-                    <h2>My Formulas</h2>
-                    <button class="btn btn--primary" onclick="showCreateFormula()">Add Formula</button>
-                </div>
-                <div id="formulas-list" class="formulas-grid">
-                    <!-- Formulas will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Starter View -->
-            <div id="starter-view" class="view">
-                <div class="view-header">
-                    <h2>Starter Management</h2>
-                    <button class="btn btn--primary" onclick="showFeedStarter()">Feed Starter</button>
-                </div>
-                
-                <div class="starter-health">
-                    <div class="health-card">
-                        <h3>Starter Health</h3>
-                        <div class="health-indicators">
-                            <div class="health-item">
-                                <span class="health-label">Last Fed</span>
-                                <span class="health-value" id="last-fed">2 days ago</span>
+                <div class="card">
+                    <h2 class="card-header">📊 Formula Library</h2>
+                    
+                    <!-- Baker's Percentage Calculator -->
+                    <div class="calculator-section">
+                        <h3>Baker's Percentage Calculator</h3>
+                        <div class="calculator-grid">
+                            <div class="form-group">
+                                <label class="form-label">Total Dough Weight (g):</label>
+                                <input type="number" id="calc-total-weight" class="form-input calc-input" value="900">
                             </div>
-                            <div class="health-item">
-                                <span class="health-label">Rise Performance</span>
-                                <span class="health-value" id="rise-performance">Good (~2x)</span>
+                            <div class="form-group">
+                                <label class="form-label">Hydration (%):</label>
+                                <input type="number" id="calc-hydration" class="form-input calc-input" value="75" step="0.1">
                             </div>
-                            <div class="health-item">
-                                <span class="health-label">Status</span>
-                                <span class="health-value status--success">Active</span>
+                            <div class="form-group">
+                                <label class="form-label">Salt (%):</label>
+                                <input type="number" id="calc-salt" class="form-input calc-input" value="2.2" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Levain (%):</label>
+                                <input type="number" id="calc-levain" class="form-input calc-input" value="20" step="0.1">
                             </div>
                         </div>
+                        
+                        <div class="calculated-results">
+                            <h4>Calculated Weights:</h4>
+                            <div class="results-grid">
+                                <div class="result-item">
+                                    <span class="result-label">Flour:</span>
+                                    <span class="result-value" id="result-flour">0g</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Water:</span>
+                                    <span class="result-value" id="result-water">0g</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Salt:</span>
+                                    <span class="result-value" id="result-salt">0g</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Levain:</span>
+                                    <span class="result-value" id="result-levain">0g</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="saveAsFormula()">💾 Save as Formula</button>
                     </div>
-                </div>
 
-                <div class="feeding-log">
-                    <h3>Feeding History</h3>
-                    <div id="feeding-history" class="feeding-entries">
-                        <!-- Feeding entries will be populated -->
+                    <!-- Saved Formulas -->
+                    <div class="saved-formulas">
+                        <h3>Saved Formulas</h3>
+                        <ul id="formulas-list" class="item-list">
+                            <!-- Formulas will be populated by JavaScript -->
+                        </ul>
                     </div>
                 </div>
             </div>
 
             <!-- History View -->
             <div id="history-view" class="view">
-                <div class="view-header">
-                    <h2>Bake History</h2>
-                    <div class="filter-controls">
-                        <select class="form-control" id="history-filter">
-                            <option value="all">All Bakes</option>
-                            <option value="5-star">5-Star Only</option>
-                            <option value="issues">With Issues</option>
-                            <option value="recent">Last 30 Days</option>
-                        </select>
+                <div class="card">
+                    <h2 class="card-header">📈 Baking History</h2>
+                    
+                    <!-- Performance Analytics -->
+                    <div class="analytics-section">
+                        <h3>Performance Analytics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-number" id="history-total">0</span>
+                                <span class="stat-label">Total Bakes</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="history-success">0%</span>
+                                <span class="stat-label">Success Rate</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="history-avg-rating">0.0</span>
+                                <span class="stat-label">Avg Quality</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="history-improvement">+0%</span>
+                                <span class="stat-label">Improvement</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div id="history-list" class="history-grid">
-                    <!-- History entries will be populated -->
+
+                    <!-- Completed Bakes -->
+                    <div class="completed-bakes">
+                        <h3>Recent Bakes</h3>
+                        <ul id="history-list" class="item-list">
+                            <!-- History will be populated by JavaScript -->
+                        </ul>
+                    </div>
                 </div>
             </div>
 
             <!-- Settings View -->
             <div id="settings-view" class="view">
-                <div class="view-header">
-                    <h2>Settings</h2>
-                </div>
-                
-                <div class="settings-sections">
+                <div class="card">
+                    <h2 class="card-header">⚙️ Settings</h2>
+                    
+                    <!-- Tampa Climate Settings -->
                     <div class="settings-section">
                         <h3>Tampa Climate Defaults</h3>
                         <div class="form-group">
-                            <label class="form-label">Default Ambient Temperature (°F)</label>
-                            <input type="number" class="form-control" id="default-temp" value="75">
+                            <label class="form-label">Default Ambient Temperature (°F):</label>
+                            <input type="number" id="default-ambient" class="form-input" value="76">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Default Humidity (%)</label>
-                            <input type="number" class="form-control" id="default-humidity" value="68">
+                            <label class="form-label">Default Humidity (%):</label>
+                            <input type="number" id="default-humidity" class="form-input" value="68">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Summer Adjustments:</label>
+                            <select id="summer-mode" class="form-select">
+                                <option value="auto">Auto - Based on current temp</option>
+                                <option value="summer">Summer Mode - Faster fermentation</option>
+                                <option value="winter">Winter Mode - Standard timing</option>
+                            </select>
                         </div>
                     </div>
 
+                    <!-- Notification Settings -->
                     <div class="settings-section">
                         <h3>Notifications</h3>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="timer-notifications" checked>
-                            <span>Timer Notifications</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="feeding-reminders" checked>
-                            <span>Starter Feeding Reminders</span>
-                        </label>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="enable-notifications" checked>
+                                Enable timer notifications
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="enable-fold-reminders" checked>
+                                Fold reminders during bulk
+                            </label>
+                        </div>
                     </div>
 
+                    <!-- Data Management -->
                     <div class="settings-section">
                         <h3>Data Management</h3>
-                        <button class="btn btn--outline" onclick="exportData()">Export Data</button>
-                        <button class="btn btn--outline" onclick="clearData()">Clear All Data</button>
+                        <button class="btn btn-secondary" onclick="exportData()">📤 Export Data</button>
+                        <button class="btn btn-warning" onclick="clearData()">🗑️ Clear All Data</button>
                     </div>
                 </div>
             </div>
@@ -378,131 +406,27 @@
 
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
-            <button class="nav-button active" data-view="dashboard" onclick="switchView('dashboard')">
-                <span class="nav-icon">📊</span>
-                <span class="nav-label">Dashboard</span>
+            <button class="nav-button active" data-view="dashboard" onclick="showView('dashboard')">
+                <span class="icon">🏠</span>
+                <span>Dashboard</span>
             </button>
-            <button class="nav-button" data-view="new-bake" onclick="switchView('new-bake')">
-                <span class="nav-icon">➕</span>
-                <span class="nav-label">New Bake</span>
+            <button class="nav-button" data-view="new-bake" onclick="showView('new-bake')">
+                <span class="icon">➕</span>
+                <span>New Bake</span>
             </button>
-            <button class="nav-button" data-view="formulas" onclick="switchView('formulas')">
-                <span class="nav-icon">📋</span>
-                <span class="nav-label">Formulas</span>
+            <button class="nav-button" data-view="formulas" onclick="showView('formulas')">
+                <span class="icon">📊</span>
+                <span>Formulas</span>
             </button>
-            <button class="nav-button" data-view="starter" onclick="switchView('starter')">
-                <span class="nav-icon">🍞</span>
-                <span class="nav-label">Starter</span>
+            <button class="nav-button" data-view="history" onclick="showView('history')">
+                <span class="icon">📈</span>
+                <span>History</span>
             </button>
-            <button class="nav-button" data-view="history" onclick="switchView('history')">
-                <span class="nav-icon">📚</span>
-                <span class="nav-label">History</span>
-            </button>
-            <button class="nav-button" data-view="settings" onclick="switchView('settings')">
-                <span class="nav-icon">⚙️</span>
-                <span class="nav-label">Settings</span>
+            <button class="nav-button" data-view="settings" onclick="showView('settings')">
+                <span class="icon">⚙️</span>
+                <span>Settings</span>
             </button>
         </nav>
-    </div>
-
-    <!-- Modals -->
-    <div id="create-formula-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create New Formula</h3>
-                <button class="modal-close" onclick="closeModal('create-formula-modal')">×</button>
-            </div>
-            <div class="modal-body">
-                <form id="formula-form">
-                    <div class="form-group">
-                        <label class="form-label">Formula Name</label>
-                        <input type="text" class="form-control" id="formula-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Total Dough Weight (g)</label>
-                        <input type="number" class="form-control" id="total-dough" value="900" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Hydration (%)</label>
-                        <input type="number" class="form-control" id="hydration" value="75" step="0.1" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Salt (%)</label>
-                        <input type="number" class="form-control" id="salt-percent" value="2.2" step="0.1" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Inoculation (%)</label>
-                        <input type="number" class="form-control" id="inoculation" value="20" step="0.1" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Levain Hydration (%)</label>
-                        <input type="number" class="form-control" id="levain-hydration" value="100" step="0.1" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Flour Mix</label>
-                        <input type="text" class="form-control" id="flour-mix" placeholder="e.g., Bread Flour 85%, Whole Wheat 15%" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Notes</label>
-                        <textarea class="form-control" id="formula-notes" rows="3"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn--secondary" onclick="closeModal('create-formula-modal')">Cancel</button>
-                <button class="btn btn--primary" onclick="saveFormula()">Save Formula</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="feed-starter-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Feed Starter</h3>
-                <button class="modal-close" onclick="closeModal('feed-starter-modal')">×</button>
-            </div>
-            <div class="modal-body">
-                <form id="feeding-form">
-                    <div class="form-group">
-                        <label class="form-label">Feeding Name</label>
-                        <input type="text" class="form-control" id="feeding-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Starter Added (g)</label>
-                        <input type="number" class="form-control" id="starter-added" value="50" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Flour (g)</label>
-                        <input type="number" class="form-control" id="feeding-flour" value="50" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Water (g)</label>
-                        <input type="number" class="form-control" id="feeding-water" value="50" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Flour Type</label>
-                        <select class="form-control" id="flour-type">
-                            <option value="Bread Flour">Bread Flour</option>
-                            <option value="All-Purpose">All-Purpose</option>
-                            <option value="Whole Wheat">Whole Wheat</option>
-                            <option value="Rye">Rye</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Temperature (°F)</label>
-                        <input type="number" class="form-control" id="feeding-temp" value="75" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Notes</label>
-                        <textarea class="form-control" id="feeding-notes" rows="3"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn--secondary" onclick="closeModal('feed-starter-modal')">Cancel</button>
-                <button class="btn btn--primary" onclick="saveFeeding()">Save Feeding</button>
-            </div>
-        </div>
     </div>
 
     <script src="app.js"></script>
