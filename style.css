@@ -1,20 +1,34 @@
-/* Mobile-First Responsive Design for Tampa Sourdough Tracker */
+/* Tampa Pro Sourdough Tracker - Mobile-First Portrait Optimized CSS */
 
 :root {
-  /* Color scheme optimized for mobile */
-  --primary-brown: #8B4513;
-  --secondary-tan: #DEB887;
-  --accent-gold: #F4A460;
+  /* Professional color scheme */
+  --primary-teal: #218085;
+  --secondary-brown: #5E5240;
+  --accent-gold: #D4AF37;
   --light-cream: #FFF8DC;
-  --success-green: #90EE90;
-  --warning-orange: #FFE4B5;
-  --header-brown: #654321;
-  --text-gray: #2F4F4F;
+  --success-green: #4CAF50;
+  --warning-orange: #FF9800;
+  --error-red: #F44336;
+  --text-dark: #2F2F2F;
+  --text-light: #666666;
   --border-light: #E0E0E0;
   --shadow: rgba(0, 0, 0, 0.1);
+  --surface-white: #FFFFFF;
 }
 
-/* Reset and base styles */
+/* Dark mode colors */
+[data-theme="dark"] {
+  --primary-teal: #4DD0E1;
+  --secondary-brown: #8D6E63;
+  --light-cream: #1E1E1E;
+  --surface-white: #2D2D2D;
+  --text-dark: #E0E0E0;
+  --text-light: #B0B0B0;
+  --border-light: #404040;
+  --shadow: rgba(255, 255, 255, 0.1);
+}
+
+/* Base responsive settings */
 * {
   margin: 0;
   padding: 0;
@@ -30,13 +44,13 @@ html {
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--light-cream);
-  color: var(--text-gray);
+  color: var(--text-dark);
   line-height: 1.6;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-/* App container */
+/* App container - mobile first */
 #app {
   min-height: 100vh;
   display: flex;
@@ -45,60 +59,90 @@ body {
   overflow-x: hidden;
 }
 
-/* Header - optimized for portrait */
+/* Header - compact for portrait */
 .app-header {
-  background: linear-gradient(135deg, var(--primary-brown), var(--header-brown));
+  background: linear-gradient(135deg, var(--primary-teal), var(--secondary-brown));
   color: white;
   padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 8px var(--shadow);
   position: sticky;
   top: 0;
   z-index: 100;
-  min-height: 60px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .app-title {
   font-size: 1.25rem;
   font-weight: 700;
-  margin: 0;
 }
 
-.climate-indicator {
+.theme-toggle {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.climate-panel {
   display: flex;
-  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
   font-size: 0.875rem;
   opacity: 0.9;
 }
 
-.temp-display, .humidity-display {
+.climate-info {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.weather-temp, .weather-humidity, .fermentation-speed {
   background: rgba(255, 255, 255, 0.2);
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-weight: 600;
 }
 
-/* Main content - full width on mobile */
+.weather-trend {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Main content - full width portrait */
 .main-content {
   flex: 1;
   padding: 1rem;
+  padding-bottom: 80px; /* Space for bottom nav */
   max-width: 100%;
   overflow-x: hidden;
 }
 
-/* Navigation - bottom tabs for mobile */
+/* Bottom navigation - portrait friendly */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: var(--surface-white);
   border-top: 1px solid var(--border-light);
   display: flex;
   justify-content: space-around;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
   box-shadow: 0 -2px 8px var(--shadow);
   z-index: 100;
 }
@@ -107,126 +151,126 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem;
   background: none;
   border: none;
-  color: var(--text-gray);
+  color: var(--text-light);
   font-size: 0.75rem;
   cursor: pointer;
+  padding: 0.25rem;
   transition: color 0.2s;
   min-width: 60px;
 }
 
 .nav-button.active {
-  color: var(--primary-brown);
+  color: var(--primary-teal);
 }
 
 .nav-button .icon {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   margin-bottom: 0.25rem;
 }
 
-/* Views */
+/* Views - single column portrait layout */
 .view {
   display: none;
-  padding-bottom: 80px; /* Space for bottom nav */
 }
 
 .view.active {
   display: block;
 }
 
-/* Cards - mobile optimized */
+/* Cards - stack vertically in portrait */
 .card {
-  background: white;
+  background: var(--surface-white);
   border-radius: 12px;
-  padding: 1rem;
+  padding: 1.25rem;
   margin-bottom: 1rem;
   box-shadow: 0 2px 8px var(--shadow);
   border: 1px solid var(--border-light);
+  width: 100%;
 }
 
 .card-header {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--primary-brown);
-  margin-bottom: 0.75rem;
+  color: var(--primary-teal);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* Forms - touch-friendly */
+/* Forms - portrait optimized */
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: var(--text-gray);
+  color: var(--text-dark);
 }
 
-.form-input {
+.form-input, .form-select, .form-textarea {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem;
   border: 2px solid var(--border-light);
   border-radius: 8px;
   font-size: 1rem;
-  background: white;
+  background: var(--surface-white);
+  color: var(--text-dark);
   transition: border-color 0.2s;
 }
 
-.form-input:focus {
+.form-input:focus, .form-select:focus, .form-textarea:focus {
   outline: none;
-  border-color: var(--primary-brown);
-}
-
-.form-input:invalid {
-  border-color: #ff6b6b;
+  border-color: var(--primary-teal);
 }
 
 /* Buttons - large touch targets */
 .btn {
-  padding: 0.875rem 1.5rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 48px; /* Accessibility touch target */
-  width: 100%;
-  margin-bottom: 0.5rem;
+  min-height: 48px;
+  margin-bottom: 0.75rem;
 }
 
 .btn-primary {
-  background: var(--primary-brown);
+  background: var(--primary-teal);
   color: white;
 }
 
-.btn-primary:hover {
-  background: var(--header-brown);
+.btn-primary:hover, .btn-primary:active {
+  background: var(--secondary-brown);
 }
 
 .btn-secondary {
-  background: var(--secondary-tan);
-  color: var(--text-gray);
+  background: var(--border-light);
+  color: var(--text-dark);
 }
 
 .btn-success {
   background: var(--success-green);
-  color: var(--text-gray);
+  color: white;
 }
 
 .btn-warning {
   background: var(--warning-orange);
-  color: var(--text-gray);
+  color: white;
 }
 
-/* Grid layouts - stack on mobile */
+/* Stats grid - stack in portrait */
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -235,8 +279,8 @@ body {
 }
 
 .stat-card {
-  background: white;
-  padding: 1rem;
+  background: var(--surface-white);
+  padding: 1.25rem;
   border-radius: 8px;
   text-align: center;
   box-shadow: 0 2px 4px var(--shadow);
@@ -244,20 +288,20 @@ body {
 
 .stat-number {
   display: block;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  color: var(--primary-brown);
+  color: var(--primary-teal);
+  margin-bottom: 0.25rem;
 }
 
 .stat-label {
   font-size: 0.875rem;
-  color: var(--text-gray);
-  margin-top: 0.25rem;
+  color: var(--text-light);
 }
 
-/* Timer displays */
-.timer-display {
-  background: var(--primary-brown);
+/* Timer displays - full width in portrait */
+.timer-card {
+  background: linear-gradient(135deg, var(--primary-teal), var(--secondary-brown));
   color: white;
   padding: 1.5rem;
   border-radius: 12px;
@@ -266,54 +310,95 @@ body {
 }
 
 .timer-time {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  font-feature-settings: 'tnum';
 }
 
 .timer-label {
   font-size: 1rem;
   opacity: 0.9;
+  margin-bottom: 1rem;
 }
 
 .timer-controls {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 0.75rem;
 }
 
 .timer-controls .btn {
   flex: 1;
+  margin-bottom: 0;
 }
 
-/* Formula calculator */
+/* Calculator - single column in portrait */
+.calculator-section {
+  background: var(--warning-orange);
+  color: white;
+  padding: 1.25rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
 .calculator-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .calc-input {
-  background: var(--warning-orange);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-dark);
 }
 
-.calc-output {
-  background: var(--success-green);
+.calculated-results {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.result-item {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-label {
   font-weight: 600;
 }
 
-/* Bake progress */
+.result-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Progress indicators - portrait friendly */
+.progress-container {
+  margin: 1.5rem 0;
+}
+
 .progress-steps {
   display: flex;
   justify-content: space-between;
-  margin: 1rem 0;
+  margin-bottom: 1rem;
   position: relative;
 }
 
 .progress-step {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--border-light);
   display: flex;
@@ -326,138 +411,143 @@ body {
 }
 
 .progress-step.active {
-  background: var(--primary-brown);
+  background: var(--primary-teal);
   color: white;
 }
 
 .progress-step.completed {
   background: var(--success-green);
-  color: var(--text-gray);
+  color: white;
 }
 
-/* Lists */
-.bake-list {
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 0.5rem;
+}
+
+/* Bake steps */
+.bake-step {
+  display: none;
+}
+
+.bake-step.active {
+  display: block;
+}
+
+.step-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.step-buttons .btn {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Lists - stack vertically */
+.item-list {
   list-style: none;
 }
 
-.bake-item {
-  background: white;
+.list-item {
+  background: var(--surface-white);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 0.75rem;
-  border-left: 4px solid var(--primary-brown);
+  border-left: 4px solid var(--primary-teal);
   box-shadow: 0 2px 4px var(--shadow);
 }
 
-.bake-name {
+.item-title {
   font-weight: 600;
-  color: var(--primary-brown);
+  color: var(--text-dark);
   margin-bottom: 0.25rem;
 }
 
-.bake-status {
+.item-subtitle {
   font-size: 0.875rem;
-  color: var(--text-gray);
+  color: var(--text-light);
 }
 
-.bake-status.active {
-  color: #e67e22;
-  font-weight: 600;
+/* Rating system - touch friendly */
+.rating-container {
+  text-align: center;
+  margin: 1.5rem 0;
 }
 
-/* Rating stars */
 .rating-stars {
   display: flex;
-  gap: 0.25rem;
   justify-content: center;
+  gap: 0.5rem;
   margin: 1rem 0;
 }
 
 .star {
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: var(--border-light);
   cursor: pointer;
   transition: color 0.2s;
+  padding: 0.25rem;
 }
 
-.star.active {
-  color: #f39c12;
+.star.active, .star:hover {
+  color: var(--accent-gold);
 }
 
-/* Issues checkboxes */
-.issues-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.issue-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+/* Log form */
+.log-form {
   background: var(--light-cream);
-  border-radius: 6px;
-}
-
-/* Photo upload */
-.photo-upload {
-  border: 2px dashed var(--border-light);
+  padding: 1.25rem;
   border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.2s;
+  margin: 1rem 0;
+  border: 1px solid var(--border-light);
 }
 
-.photo-upload:hover {
-  border-color: var(--primary-brown);
+.log-form h3 {
+  color: var(--primary-teal);
+  margin-bottom: 1rem;
 }
 
-.photo-preview {
-  width: 100%;
-  max-width: 200px;
-  height: auto;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-}
-
-/* Alerts and messages */
+/* Alerts - full width */
 .alert {
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 .alert-success {
   background: var(--success-green);
-  color: var(--text-gray);
+  color: white;
 }
 
 .alert-warning {
   background: var(--warning-orange);
-  color: var(--text-gray);
+  color: white;
 }
 
 .alert-info {
-  background: var(--secondary-tan);
-  color: var(--text-gray);
+  background: var(--primary-teal);
+  color: white;
 }
 
 /* Loading states */
-.loading {
+.loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2rem;
 }
 
-.spinner {
+.loading-spinner {
   width: 40px;
   height: 40px;
   border: 3px solid var(--border-light);
-  border-top: 3px solid var(--primary-brown);
+  border-top: 3px solid var(--primary-teal);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -467,67 +557,42 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive breakpoints */
-
-/* Small phones (portrait) */
-@media screen and (max-width: 360px) and (orientation: portrait) {
+/* Portrait-specific optimizations */
+@media screen and (orientation: portrait) and (max-width: 480px) {
   .app-title {
     font-size: 1rem;
   }
   
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
   
   .calculator-grid {
     grid-template-columns: 1fr;
   }
   
-  .issues-grid {
+  .timer-time {
+    font-size: 2rem;
+  }
+  
+  .climate-info {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .results-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Standard phones (portrait) */
-@media screen and (min-width: 361px) and (max-width: 767px) and (orientation: portrait) {
-  .main-content {
-    padding: 1rem;
-  }
-  
-  .timer-time {
-    font-size: 2.5rem;
-  }
-}
-
-/* Landscape mode adjustments */
-@media screen and (orientation: landscape) and (max-height: 500px) {
-  .app-header {
-    padding: 0.5rem 1rem;
-    min-height: 50px;
-  }
-  
-  .app-title {
-    font-size: 1rem;
-  }
-  
+/* Very narrow screens */
+@media screen and (max-width: 360px) and (orientation: portrait) {
   .main-content {
     padding: 0.75rem;
   }
   
-  .bottom-nav {
-    padding: 0.25rem 0;
-  }
-  
-  .nav-button {
-    padding: 0.25rem;
-    font-size: 0.6875rem;
-  }
-  
-  .nav-button .icon {
-    font-size: 1rem;
-  }
-  
-  .timer-display {
+  .card {
     padding: 1rem;
   }
   
@@ -535,16 +600,43 @@ body {
     font-size: 1.75rem;
   }
   
+  .btn {
+    padding: 0.875rem 1rem;
+  }
+  
+  .climate-panel {
+    font-size: 0.75rem;
+  }
+}
+
+/* Landscape adjustments (when unavoidable) */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .app-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .climate-panel {
+    display: none; /* Hide to save space */
+  }
+  
+  .main-content {
+    padding: 0.75rem;
+  }
+  
   .stats-grid {
     grid-template-columns: repeat(4, 1fr);
   }
   
-  .view {
-    padding-bottom: 60px;
+  .calculator-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .timer-time {
+    font-size: 1.75rem;
   }
 }
 
-/* Tablets (portrait) */
+/* Tablet portrait */
 @media screen and (min-width: 768px) and (orientation: portrait) {
   .main-content {
     max-width: 600px;
@@ -557,7 +649,7 @@ body {
   }
   
   .calculator-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -565,47 +657,55 @@ body {
 @media screen and (min-width: 1024px) {
   .main-content {
     max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
   }
   
   .bottom-nav {
     position: relative;
-    box-shadow: none;
-    border-top: none;
-    border-bottom: 1px solid var(--border-light);
+    border-top: 1px solid var(--border-light);
     margin-bottom: 2rem;
+    box-shadow: none;
   }
   
-  .view {
-    padding-bottom: 0;
+  .main-content {
+    padding-bottom: 2rem;
   }
 }
 
-/* Hide certain elements on very small screens */
-@media screen and (max-width: 320px) {
-  .climate-indicator {
-    display: none;
-  }
-}
-
-/* Ensure no horizontal scrolling */
-html, body {
-  overflow-x: hidden;
-  max-width: 100vw;
-}
-
-*, *::before, *::after {
-  max-width: 100%;
-}
-
-/* Fix for iOS Safari viewport issues */
-@supports (-webkit-touch-callout: none) {
+/* Safe area insets for iPhone */
+@supports (padding: max(0px)) {
   .app-header {
-    padding-top: env(safe-area-inset-top);
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-top: max(1rem, env(safe-area-inset-top));
   }
   
   .bottom-nav {
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+  }
+  
+  .btn {
+    border: 2px solid transparent;
+  }
+  
+  .btn-primary {
+    border-color: var(--text-dark);
   }
 }
