@@ -9,7 +9,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Tampa Pro Sourdough">
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRhbXBhIFBybyBTb3VyZG91Z2ggVHJhY2tlciIsCiAgInNob3J0X25hbWUiOiAiUHJvU291cmRvdWdoIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMyMTgwODUiLAogICJ0aGVtZV9jb2xvciI6ICIjMjE4MDg1IiwKICAiaWNvbnMiOiBbXQp9">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23218085'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' font-size='120' fill='white'>🍞</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🍞</text></svg>">
 </head>
 <body data-theme="light">
     <div id="app">
@@ -38,12 +40,12 @@
             <div id="dashboard-view" class="view active">
                 <!-- Active Fermentation Panel -->
                 <section class="active-fermentation">
-                    <div class="card">
+                    <div class="card active-bake-card">
                         <h2 class="card-header">🕐 Active Fermentation</h2>
                         <div id="active-timers" class="timers-container">
                             <!-- Timers will be populated by JavaScript -->
                         </div>
-                        <button class="btn btn-primary" onclick="startNewBake()">
+                        <button class="btn btn-primary btn-large" onclick="startNewBake()">
                             ➕ Start New Bake
                         </button>
                     </div>
@@ -305,7 +307,10 @@
 
                     <!-- Saved Formulas -->
                     <div class="saved-formulas">
-                        <h3>Saved Formulas</h3>
+                        <div class="section-header">
+                            <h3>Saved Formulas</h3>
+                            <button class="btn btn-secondary" onclick="importRecipe()">📥 Import Recipe</button>
+                        </div>
                         <ul id="formulas-list" class="item-list">
                             <!-- Formulas will be populated by JavaScript -->
                         </ul>
