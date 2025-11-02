@@ -256,7 +256,7 @@ function resetBakeWizard() {
 
 function nextStep() {
   if (validateCurrentStep()) {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       currentStep++;
       updateProgressSteps();
       showBakeStep(currentStep);
@@ -303,12 +303,15 @@ function showBakeStep(stepNum) {
       updateFormulaSelect();
       break;
     case 2:
-      calculateTiming();
+      showLevainInstructions();
       break;
     case 3:
-      loadEnvironmentDefaults();
+      calculateTiming();
       break;
     case 4:
+      loadEnvironmentDefaults();
+      break;
+    case 5:
       generateBakeSummary();
       break;
   }
@@ -325,13 +328,15 @@ function validateCurrentStep() {
       selectedFormula = formulas.find(f => f.id == formulaSelect.value);
       return true;
     case 2:
+      return true; // Levain instructions are informational
+    case 3:
       const targetTime = document.getElementById('target-bake-time');
       if (!targetTime.value) {
         alert('Please set a target bake time');
         return false;
       }
       return true;
-    case 3:
+    case 4:
       return true; // Environment step is optional
     default:
       return true;
@@ -408,31 +413,41 @@ function showFormulaDetails(formulaId) {
 
 function calculateTiming() {
   if (!selectedFormula) return;
-  
+
   const targetTime = document.getElementById('target-bake-time').value;
   const currentTemp = parseFloat(document.getElementById('current-temp').value) || 78;
-  
+
   if (!targetTime) return;
-  
+
   const target = new Date(targetTime);
   const now = new Date();
-  
+
+  // Calculate levain build requirements
+  const levainBuild = calculateLevainBuild(selectedFormula);
+
   // Calculate timing based on Tampa temperature adjustments
   const tempAdjustment = getTempAdjustment(currentTemp);
   const baseBulkHours = 4.5;
   const baseProofHours = 3.0;
-  
+
   const adjustedBulkHours = baseBulkHours * tempAdjustment;
   const adjustedProofHours = baseProofHours * tempAdjustment;
-  
+
   const totalHours = adjustedBulkHours + adjustedProofHours;
   const startTime = new Date(target.getTime() - (totalHours * 60 * 60 * 1000));
   const bulkEndTime = new Date(startTime.getTime() + (adjustedBulkHours * 60 * 60 * 1000));
-  
+
+  // Calculate levain start time (typically 4-8 hours before mixing)
+  const levainStartTime = new Date(startTime.getTime() - (levainBuild.buildTime * 60 * 60 * 1000));
+
   const resultsContainer = document.getElementById('timing-results');
   resultsContainer.innerHTML = `
     <div class="timing-schedule">
       <h4>Calculated Schedule</h4>
+      <div class="schedule-item levain-highlight">
+        <strong>🌾 Build Levain:</strong> ${formatTime(levainStartTime)}
+        <small class="schedule-detail">${levainBuild.buildTime} hours before mixing</small>
+      </div>
       <div class="schedule-item">
         <strong>Start Bulk:</strong> ${formatTime(startTime)}
       </div>
@@ -467,11 +482,20 @@ function loadEnvironmentDefaults() {
 
 function generateBakeSummary() {
   if (!selectedFormula) return;
-  
+
   const targetTime = document.getElementById('target-bake-time').value;
   const ambientTemp = document.getElementById('ambient-temp').value;
   const humidity = document.getElementById('ambient-humidity').value;
-  
+  const currentTemp = parseFloat(document.getElementById('current-temp').value) || 78;
+
+  // Calculate levain info for summary
+  const levainBuild = calculateLevainBuild(selectedFormula);
+  const tempAdjustment = getTempAdjustment(currentTemp);
+  const totalHours = (4.5 * tempAdjustment) + (3.0 * tempAdjustment);
+  const target = new Date(targetTime);
+  const startTime = new Date(target.getTime() - (totalHours * 60 * 60 * 1000));
+  const levainStartTime = new Date(startTime.getTime() - (levainBuild.buildTime * 60 * 60 * 1000));
+
   const summaryContainer = document.getElementById('bake-summary');
   summaryContainer.innerHTML = `
     <div class="bake-summary-content">
@@ -479,8 +503,15 @@ function generateBakeSummary() {
       <div class="summary-item">
         <strong>Formula:</strong> ${selectedFormula.name}
       </div>
+      <div class="summary-item levain-highlight">
+        <strong>🌾 Build Levain:</strong> ${formatTime(levainStartTime)}
+        <small class="schedule-detail">${levainBuild.totalAmount}g total (${levainBuild.buildTime} hours before mixing)</small>
+      </div>
       <div class="summary-item">
-        <strong>Target Bake Time:</strong> ${formatTime(new Date(targetTime))}
+        <strong>Start Mixing Dough:</strong> ${formatTime(startTime)}
+      </div>
+      <div class="summary-item">
+        <strong>Target Bake Time:</strong> ${formatTime(target)}
       </div>
       <div class="summary-item">
         <strong>Environment:</strong> ${ambientTemp}°F, ${humidity}% humidity
@@ -489,7 +520,8 @@ function generateBakeSummary() {
         <strong>Total Dough:</strong> ${selectedFormula.totalDoughG}g
       </div>
       <div class="alert alert-info">
-        <p>Ready to start your bake! Timers will begin automatically.</p>
+        <p><strong>Important:</strong> Make sure your levain is ready by ${formatTime(levainStartTime)}!</p>
+        <p>Timers will begin when you click "Start Baking" and will track from the dough mixing stage.</p>
       </div>
     </div>
   `;
@@ -742,8 +774,203 @@ function calculateWeights(totalWeight, hydrationPercent, saltPercent, levainPerc
   const water = Math.round(flour * hydrationPercent / 100);
   const salt = Math.round(flour * saltPercent / 100);
   const levain = Math.round(flour * levainPercent / 100);
-  
+
   return { flour, water, salt, levain };
+}
+
+// Calculate levain build recommendations based on formula
+function calculateLevainBuild(formula) {
+  const totalLevain = Math.round((formula.totalDoughG / (1 + formula.hydrationPercent/100 + formula.saltPercent/100)) * formula.levainPercent / 100);
+
+  // Determine levain hydration based on bread type and flour composition
+  let levainHydration = 100; // Default 100% hydration (1:1 flour:water)
+  let starterRatio = 0.2; // Default 20% inoculation
+  let buildTime = 4; // Default 4 hours
+  let buildTemp = 78; // Default target temperature
+
+  // Adjust based on formula complexity and composition
+  if (formula.flourComposition) {
+    const wholeGrainPercent = (formula.flourComposition.wholeWheat || 0) +
+                               (formula.flourComposition.rye || 0) +
+                               (formula.flourComposition.highExtraction || 0);
+
+    // Higher whole grain = slightly stiffer levain for better structure
+    if (wholeGrainPercent > 20) {
+      levainHydration = 80;
+      starterRatio = 0.15; // Less starter for slower, more controlled fermentation
+      buildTime = 5;
+    }
+  }
+
+  // Adjust for Tampa climate - reduce starter amount to slow fermentation
+  if (formula.tampaAdjustments) {
+    starterRatio = Math.max(0.1, starterRatio - 0.05); // Reduce by 5% for Tampa heat
+    buildTime = buildTime - (formula.tampaAdjustments.levainReduction || 0);
+    buildTemp = 76; // Slightly cooler for Tampa
+  }
+
+  // Calculate levain components (starter, flour, water)
+  const starterAmount = Math.round(totalLevain * starterRatio);
+  const levainFlour = Math.round((totalLevain - starterAmount) / (1 + levainHydration/100));
+  const levainWater = Math.round(levainFlour * levainHydration / 100);
+
+  // Determine flour composition for levain
+  let flourBreakdown = {};
+  if (formula.flourComposition) {
+    const ryePercent = formula.flourComposition.rye || 0;
+    const wholeWheatPercent = formula.flourComposition.wholeWheat || 0;
+
+    if (ryePercent > 0) {
+      // Use some rye in levain for flavor
+      flourBreakdown.rye = Math.round(levainFlour * Math.min(ryePercent, 20) / 100);
+      flourBreakdown.breadFlour = levainFlour - flourBreakdown.rye;
+    } else if (wholeWheatPercent > 0) {
+      // Use some whole wheat for flavor
+      flourBreakdown.wholeWheat = Math.round(levainFlour * Math.min(wholeWheatPercent, 20) / 100);
+      flourBreakdown.breadFlour = levainFlour - flourBreakdown.wholeWheat;
+    } else {
+      flourBreakdown.breadFlour = levainFlour;
+    }
+  } else {
+    flourBreakdown.breadFlour = levainFlour;
+  }
+
+  // Generate feeding schedule recommendation
+  let feedingSchedule = [];
+  const currentTemp = 76; // Tampa typical temp
+
+  if (buildTime <= 4) {
+    // Single build
+    feedingSchedule.push({
+      timing: `${buildTime} hours before mixing`,
+      description: 'Single feed - build levain to peak'
+    });
+  } else if (buildTime <= 6) {
+    // Two builds for more complex breads
+    feedingSchedule.push({
+      timing: `${buildTime + 4} hours before mixing`,
+      description: 'First feed - refresh starter (1:2:2 ratio)'
+    });
+    feedingSchedule.push({
+      timing: `${buildTime} hours before mixing`,
+      description: 'Final build - build to required amount'
+    });
+  } else {
+    // Three builds for expert-level breads
+    feedingSchedule.push({
+      timing: `${buildTime + 8} hours before mixing`,
+      description: 'First feed - refresh starter (1:1:1 ratio)'
+    });
+    feedingSchedule.push({
+      timing: `${buildTime + 4} hours before mixing`,
+      description: 'Second feed - build up (1:2:2 ratio)'
+    });
+    feedingSchedule.push({
+      timing: `${buildTime} hours before mixing`,
+      description: 'Final build - build to required amount'
+    });
+  }
+
+  return {
+    totalAmount: totalLevain,
+    starter: starterAmount,
+    flour: levainFlour,
+    water: levainWater,
+    flourBreakdown: flourBreakdown,
+    hydration: levainHydration,
+    buildTime: buildTime,
+    targetTemp: buildTemp,
+    feedingSchedule: feedingSchedule,
+    readinessIndicators: [
+      'Doubled in volume',
+      'Dome-shaped or slightly domed top',
+      'Bubbles throughout',
+      'Pleasant sour smell',
+      'Passes the float test (small spoonful floats in water)'
+    ]
+  };
+}
+
+function showLevainInstructions() {
+  if (!selectedFormula) return;
+
+  const levainBuild = calculateLevainBuild(selectedFormula);
+  const container = document.getElementById('levain-instructions');
+
+  // Generate flour breakdown text
+  let flourText = '';
+  if (levainBuild.flourBreakdown.breadFlour) {
+    flourText += `${levainBuild.flourBreakdown.breadFlour}g bread flour`;
+  }
+  if (levainBuild.flourBreakdown.wholeWheat) {
+    flourText += ` + ${levainBuild.flourBreakdown.wholeWheat}g whole wheat`;
+  }
+  if (levainBuild.flourBreakdown.rye) {
+    flourText += ` + ${levainBuild.flourBreakdown.rye}g rye`;
+  }
+
+  container.innerHTML = `
+    <div class="levain-build-card">
+      <div class="alert alert-info">
+        <p><strong>Build your levain ${levainBuild.buildTime} hours before mixing the dough.</strong></p>
+        <p>This ensures your levain is at peak activity when you start your bake.</p>
+      </div>
+
+      <div class="levain-recipe">
+        <h4>Levain Recipe (${levainBuild.hydration}% hydration)</h4>
+        <div class="ingredient-list">
+          <div class="ingredient-item">
+            <span class="ingredient-name">Active starter:</span>
+            <span class="ingredient-amount">${levainBuild.starter}g</span>
+          </div>
+          <div class="ingredient-item">
+            <span class="ingredient-name">Flour:</span>
+            <span class="ingredient-amount">${levainBuild.flour}g (${flourText})</span>
+          </div>
+          <div class="ingredient-item">
+            <span class="ingredient-name">Water:</span>
+            <span class="ingredient-amount">${levainBuild.water}g</span>
+          </div>
+          <div class="ingredient-item total">
+            <span class="ingredient-name"><strong>Total levain:</strong></span>
+            <span class="ingredient-amount"><strong>${levainBuild.totalAmount}g</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feeding-schedule">
+        <h4>Feeding Schedule</h4>
+        <ul class="schedule-list">
+          ${levainBuild.feedingSchedule.map(feed => `
+            <li class="schedule-step">
+              <strong>${feed.timing}</strong>
+              <p>${feed.description}</p>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <div class="levain-tips">
+        <h4>Levain Readiness Indicators</h4>
+        <p>Your levain is ready when it shows these signs:</p>
+        <ul class="readiness-list">
+          ${levainBuild.readinessIndicators.map(indicator => `
+            <li>✓ ${indicator}</li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <div class="temp-note">
+        <h4>Temperature Tips for Tampa</h4>
+        <p>Ideal levain temperature: <strong>${levainBuild.targetTemp}°F</strong></p>
+        <ul>
+          <li>In hot weather, use cooler water to control fermentation</li>
+          <li>Place in AC-cooled room if ambient temp is above 80°F</li>
+          <li>Monitor closely - Tampa heat can accelerate fermentation by 25%</li>
+        </ul>
+      </div>
+    </div>
+  `;
 }
 
 function saveAsFormula() {

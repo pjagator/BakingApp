@@ -857,3 +857,173 @@ body {
     font-size: 1rem;
   }
 }
+
+/* Levain Instructions Styles */
+.levain-instructions {
+  margin-top: 1rem;
+}
+
+.levain-build-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.levain-recipe {
+  background: var(--surface-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+
+.levain-recipe h4 {
+  color: var(--primary-teal);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.ingredient-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ingredient-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: var(--light-cream);
+  border-radius: 4px;
+}
+
+.ingredient-item.total {
+  background: var(--primary-teal);
+  color: white;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.ingredient-name {
+  color: var(--text-dark);
+}
+
+.ingredient-item.total .ingredient-name,
+.ingredient-item.total .ingredient-amount {
+  color: white;
+}
+
+.ingredient-amount {
+  font-weight: 600;
+  color: var(--primary-teal);
+}
+
+.feeding-schedule {
+  background: var(--surface-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+
+.feeding-schedule h4 {
+  color: var(--secondary-brown);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.schedule-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.schedule-step {
+  padding: 1rem;
+  background: var(--light-cream);
+  border-radius: 4px;
+  border-left: 4px solid var(--accent-gold);
+}
+
+.schedule-step strong {
+  color: var(--primary-teal);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.schedule-step p {
+  color: var(--text-light);
+  margin: 0;
+}
+
+.levain-tips {
+  background: var(--surface-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+
+.levain-tips h4 {
+  color: var(--success-green);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.levain-tips p {
+  color: var(--text-light);
+  margin-bottom: 0.75rem;
+}
+
+.readiness-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.readiness-list li {
+  padding: 0.5rem;
+  background: var(--light-cream);
+  border-radius: 4px;
+  color: var(--text-dark);
+}
+
+.temp-note {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05));
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--warning-orange);
+}
+
+.temp-note h4 {
+  color: var(--warning-orange);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.temp-note p {
+  margin-bottom: 0.75rem;
+}
+
+.temp-note ul {
+  margin-left: 1.25rem;
+  color: var(--text-light);
+}
+
+.temp-note ul li {
+  margin-bottom: 0.5rem;
+}
+
+.levain-highlight {
+  background: linear-gradient(135deg, rgba(33, 128, 133, 0.1), rgba(33, 128, 133, 0.05));
+  border-left: 4px solid var(--primary-teal);
+  padding: 0.75rem 1rem;
+}
+
+.schedule-detail {
+  display: block;
+  color: var(--text-light);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
