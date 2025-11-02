@@ -10,6 +10,8 @@ let environmentLogs = [];
 let bakeHistory = [];
 let formulas = [];
 let settings = {};
+let deferredPrompt = null;
+let notificationPermission = false;
 
 // Professional Formulas Database
 const defaultFormulas = [
@@ -70,6 +72,7 @@ function initializeApp() {
   loadSettings();
   loadFormulas();
   loadBakeHistory();
+  loadCurrentBake();
   updateDashboard();
   updateClimatePanel();
   setupCalculatorListeners();
@@ -513,6 +516,7 @@ function startBake() {
   };
   
   saveCurrentBake();
+  scheduleStageNotifications();
   showView('active-bake');
   updateActiveBakeView();
   startMainTimer();
@@ -768,7 +772,7 @@ function saveAsFormula() {
 
 function updateFormulasView() {
   const container = document.getElementById('formulas-list');
-  
+
   if (formulas.length === 0) {
     container.innerHTML = `
       <li class="list-item">
@@ -778,14 +782,17 @@ function updateFormulasView() {
     `;
     return;
   }
-  
+
   container.innerHTML = formulas.map(formula => `
     <li class="list-item">
-      <div class="item-title">${formula.name}</div>
-      <div class="item-subtitle">
-        ${formula.totalDoughG}g total, ${formula.hydrationPercent}% hydration, 
-        ${formula.saltPercent}% salt, ${formula.levainPercent}% levain
+      <div class="item-content">
+        <div class="item-title">${formula.name}</div>
+        <div class="item-subtitle">
+          ${formula.totalDoughG}g total, ${formula.hydrationPercent}% hydration,
+          ${formula.saltPercent}% salt, ${formula.levainPercent}% levain
+        </div>
       </div>
+      <button class="btn-icon" onclick="shareRecipe(${formula.id})" title="Share recipe">📤</button>
     </li>
   `).join('');
 }
@@ -811,7 +818,7 @@ function updateHistoryStats() {
 function updateHistoryList() {
   const container = document.getElementById('history-list');
   const recentBakes = bakeHistory.slice(-10).reverse();
-  
+
   if (recentBakes.length === 0) {
     container.innerHTML = `
       <li class="list-item">
@@ -821,14 +828,17 @@ function updateHistoryList() {
     `;
     return;
   }
-  
+
   container.innerHTML = recentBakes.map(bake => `
     <li class="list-item">
-      <div class="item-title">${bake.name}</div>
-      <div class="item-subtitle">
-        ${formatDate(bake.startTime)} - ${bake.status}
-        ${bake.rating ? ' - ' + '⭐'.repeat(bake.rating) : ''}
+      <div class="item-content">
+        <div class="item-title">${bake.name}</div>
+        <div class="item-subtitle">
+          ${formatDate(bake.startTime)} - ${bake.status}
+          ${bake.rating ? ' - ' + '⭐'.repeat(bake.rating) : ''}
+        </div>
       </div>
+      ${bake.status === 'completed' ? `<button class="btn-icon" onclick="shareBakeResult(${bake.id})" title="Share bake result">📤</button>` : ''}
     </li>
   `).join('');
 }
@@ -901,4 +911,311 @@ function formatTime(date) {
 // Initialize calculator on page load
 document.addEventListener('DOMContentLoaded', function() {
   updateCalculations();
+  setupPWAInstallPrompt();
+  requestNotificationPermission();
 });
+
+// ===== SHARING & SOCIAL FEATURES =====
+
+// Share a recipe using Web Share API (perfect for iPhone)
+async function shareRecipe(formulaId) {
+  const formula = formulas.find(f => f.id == formulaId);
+  if (!formula) return;
+
+  const calculations = calculateWeights(formula.totalDoughG, formula.hydrationPercent, formula.saltPercent, formula.levainPercent);
+
+  const recipeText = `🍞 ${formula.name}
+
+📊 Recipe Details:
+• Total: ${formula.totalDoughG}g
+• Hydration: ${formula.hydrationPercent}%
+• Salt: ${formula.saltPercent}%
+• Levain: ${formula.levainPercent}%
+
+⚖️ Weights:
+• Flour: ${calculations.flour}g
+• Water: ${calculations.water}g
+• Salt: ${calculations.salt}g
+• Levain: ${calculations.levain}g
+
+${formula.notes ? '📝 Notes: ' + formula.notes : ''}
+
+Shared from Tampa Pro Sourdough Tracker`;
+
+  // Check if Web Share API is available (iOS Safari supports this)
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: formula.name,
+        text: recipeText
+      });
+      console.log('Recipe shared successfully');
+    } catch (err) {
+      // User cancelled or error occurred
+      if (err.name !== 'AbortError') {
+        copyRecipeToClipboard(recipeText);
+      }
+    }
+  } else {
+    // Fallback: copy to clipboard
+    copyRecipeToClipboard(recipeText);
+  }
+}
+
+// Copy recipe to clipboard as fallback
+function copyRecipeToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Recipe copied to clipboard! You can paste and share it.');
+    }).catch(() => {
+      // Fallback to old method
+      fallbackCopyTextToClipboard(text);
+    });
+  } else {
+    fallbackCopyTextToClipboard(text);
+  }
+}
+
+// Fallback clipboard copy for older browsers
+function fallbackCopyTextToClipboard(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    document.execCommand('copy');
+    alert('Recipe copied to clipboard! You can paste and share it.');
+  } catch (err) {
+    alert('Unable to copy recipe. Please select and copy manually.');
+  }
+
+  document.body.removeChild(textArea);
+}
+
+// Share a completed bake
+async function shareBakeResult(bakeId) {
+  const bake = bakeHistory.find(b => b.id === bakeId);
+  if (!bake) return;
+
+  const duration = bake.endTime ? Math.round((new Date(bake.endTime) - new Date(bake.startTime)) / (1000 * 60 * 60)) : 0;
+
+  const bakeText = `🍞 Just finished baking: ${bake.name}
+
+⏱️ Fermentation Time: ${duration} hours
+🌡️ Ambient: ${bake.environment.ambientTemp}°F
+💧 Humidity: ${bake.environment.humidity}%
+${bake.rating ? '⭐ Rating: ' + '★'.repeat(bake.rating) + '☆'.repeat(5 - bake.rating) : ''}
+
+Tracked with Tampa Pro Sourdough Tracker`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'My Sourdough Bake',
+        text: bakeText
+      });
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        copyRecipeToClipboard(bakeText);
+      }
+    }
+  } else {
+    copyRecipeToClipboard(bakeText);
+  }
+}
+
+// Import a shared recipe
+function importRecipe() {
+  const recipeText = prompt('Paste the shared recipe text here:');
+  if (!recipeText) return;
+
+  try {
+    // Parse the recipe text
+    const lines = recipeText.split('\n');
+    const nameMatch = recipeText.match(/🍞 (.+?)(?:\n|$)/);
+    const totalMatch = recipeText.match(/Total: (\d+)g/);
+    const hydrationMatch = recipeText.match(/Hydration: ([\d.]+)%/);
+    const saltMatch = recipeText.match(/Salt: ([\d.]+)%/);
+    const levainMatch = recipeText.match(/Levain: ([\d.]+)%/);
+    const notesMatch = recipeText.match(/📝 Notes: (.+?)(?:\n|$)/);
+
+    if (!nameMatch || !totalMatch || !hydrationMatch || !saltMatch || !levainMatch) {
+      alert('Invalid recipe format. Please make sure you copied the complete recipe.');
+      return;
+    }
+
+    const newFormula = {
+      id: Date.now(),
+      name: nameMatch[1],
+      totalDoughG: parseInt(totalMatch[1]),
+      hydrationPercent: parseFloat(hydrationMatch[1]),
+      saltPercent: parseFloat(saltMatch[1]),
+      levainPercent: parseFloat(levainMatch[1]),
+      notes: notesMatch ? notesMatch[1] : 'Imported recipe'
+    };
+
+    formulas.push(newFormula);
+    saveFormulas();
+    updateFormulasView();
+    alert(`Recipe "${newFormula.name}" imported successfully!`);
+    showView('formulas');
+  } catch (err) {
+    alert('Failed to import recipe. Please check the format and try again.');
+  }
+}
+
+// ===== PWA INSTALLATION =====
+
+function setupPWAInstallPrompt() {
+  // Listen for the beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later
+    deferredPrompt = e;
+    // Show install button or banner
+    showInstallBanner();
+  });
+
+  // Check if already installed
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('App is running in standalone mode');
+  }
+}
+
+function showInstallBanner() {
+  // Check if we should show the banner (not shown more than once per session)
+  if (sessionStorage.getItem('install-banner-shown')) return;
+
+  // For iOS, show instructions
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (isIOS && !window.matchMedia('(display-mode: standalone)').matches) {
+    // Show iOS-specific install instructions after a delay
+    setTimeout(() => {
+      if (confirm('Add Tampa Pro Sourdough to your home screen for the best experience!\n\nTap the Share button (⬆️) then "Add to Home Screen"')) {
+        sessionStorage.setItem('install-banner-shown', 'true');
+      }
+    }, 3000);
+  } else if (deferredPrompt) {
+    // For Android and other platforms
+    setTimeout(() => {
+      if (confirm('Install Tampa Pro Sourdough app for easier access?')) {
+        installPWA();
+      }
+      sessionStorage.setItem('install-banner-shown', 'true');
+    }, 3000);
+  }
+}
+
+async function installPWA() {
+  if (!deferredPrompt) return;
+
+  // Show the install prompt
+  deferredPrompt.prompt();
+
+  // Wait for the user to respond to the prompt
+  const { outcome } = await deferredPrompt.userChoice;
+
+  if (outcome === 'accepted') {
+    console.log('User accepted the install prompt');
+  }
+
+  // Clear the deferredPrompt
+  deferredPrompt = null;
+}
+
+// ===== NOTIFICATIONS =====
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.log('This browser does not support notifications');
+    return;
+  }
+
+  if (Notification.permission === 'granted') {
+    notificationPermission = true;
+  } else if (Notification.permission !== 'denied') {
+    const permission = await Notification.requestPermission();
+    notificationPermission = permission === 'granted';
+  }
+}
+
+function sendNotification(title, body, tag = 'sourdough') {
+  if (!notificationPermission || !settings.enableNotifications) return;
+
+  try {
+    const notification = new Notification(title, {
+      body: body,
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">🍞</text></svg>',
+      badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">🍞</text></svg>',
+      tag: tag,
+      vibrate: [200, 100, 200]
+    });
+
+    notification.onclick = function() {
+      window.focus();
+      if (currentBake) {
+        showView('active-bake');
+      }
+      notification.close();
+    };
+  } catch (err) {
+    console.log('Notification error:', err);
+  }
+}
+
+// Schedule notifications for fermentation stages
+function scheduleStageNotifications() {
+  if (!currentBake) return;
+
+  const now = Date.now();
+  const startTime = new Date(currentBake.startTime).getTime();
+  const currentTemp = currentBake.environment.ambientTemp;
+  const tempAdjustment = getTempAdjustment(currentTemp);
+
+  // Calculate stage times
+  const bulkDuration = 4.5 * 60 * 60 * 1000 * tempAdjustment; // hours to ms
+  const proofDuration = 3.0 * 60 * 60 * 1000 * tempAdjustment;
+
+  const bulkEndTime = startTime + bulkDuration;
+  const proofEndTime = bulkEndTime + proofDuration;
+
+  // Schedule bulk fermentation reminder (30 min before end)
+  const bulkReminderTime = bulkEndTime - (30 * 60 * 1000);
+  if (bulkReminderTime > now) {
+    setTimeout(() => {
+      sendNotification('Bulk Fermentation Almost Done', 'Check your dough in 30 minutes - it should be ready for shaping!', 'bulk-reminder');
+    }, bulkReminderTime - now);
+  }
+
+  // Schedule bulk end notification
+  if (bulkEndTime > now) {
+    setTimeout(() => {
+      sendNotification('Bulk Fermentation Complete! 🎉', 'Time to pre-shape your dough', 'bulk-complete');
+    }, bulkEndTime - now);
+  }
+
+  // Schedule proof end notification
+  if (proofEndTime > now) {
+    setTimeout(() => {
+      sendNotification('Final Proof Complete! 🔥', 'Your dough is ready to bake!', 'proof-complete');
+    }, proofEndTime - now);
+  }
+
+  // Fold reminders during bulk (every 30 minutes for first 2 hours)
+  if (settings.enableFoldReminders) {
+    for (let i = 1; i <= 4; i++) {
+      const foldTime = startTime + (i * 30 * 60 * 1000);
+      if (foldTime > now && foldTime < bulkEndTime) {
+        setTimeout(() => {
+          sendNotification('Time for a Fold', `Fold #${i} - Stretch and fold your dough`, 'fold-' + i);
+        }, foldTime - now);
+      }
+    }
+  }
+}
