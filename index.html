@@ -99,9 +99,11 @@
                             <div class="progress-step" data-step="2">2</div>
                             <div class="progress-step" data-step="3">3</div>
                             <div class="progress-step" data-step="4">4</div>
+                            <div class="progress-step" data-step="5">5</div>
                         </div>
                         <div class="progress-labels">
                             <span>Formula</span>
+                            <span>Levain</span>
                             <span>Timing</span>
                             <span>Environment</span>
                             <span>Start</span>
@@ -125,11 +127,23 @@
                             <!-- Formula details will be populated by JavaScript -->
                         </div>
 
-                        <button class="btn btn-primary" onclick="nextStep()">Next: Timing →</button>
+                        <button class="btn btn-primary" onclick="nextStep()">Next: Levain →</button>
                     </div>
 
-                    <!-- Step 2: Timing Setup -->
+                    <!-- Step 2: Levain Preparation -->
                     <div id="step-2" class="bake-step">
+                        <h3>🌾 Levain Preparation</h3>
+                        <div id="levain-instructions" class="levain-instructions">
+                            <!-- Levain build instructions will be populated by JavaScript -->
+                        </div>
+                        <div class="step-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn btn-primary" onclick="nextStep()">Next: Timing →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Timing Setup -->
+                    <div id="step-3" class="bake-step">
                         <h3>Setup Timing</h3>
                         <div class="form-group">
                             <label class="form-label">Target Bake Time:</label>
@@ -148,8 +162,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Environment Setup -->
-                    <div id="step-3" class="bake-step">
+                    <!-- Step 4: Environment Setup -->
+                    <div id="step-4" class="bake-step">
                         <h3>Environment Conditions</h3>
                         <div class="form-group">
                             <label class="form-label">Ambient Temperature (°F):</label>
@@ -173,8 +187,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 4: Start Confirmation -->
-                    <div id="step-4" class="bake-step">
+                    <!-- Step 5: Start Confirmation -->
+                    <div id="step-5" class="bake-step">
                         <h3>Ready to Start</h3>
                         <div id="bake-summary" class="bake-summary">
                             <!-- Summary will be populated by JavaScript -->
